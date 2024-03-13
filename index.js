@@ -23,7 +23,7 @@ const verifyUser = (req, res, next) => {
     const token = req.cookies.token; 
     if(token) {
         Jwt.verify(token, "jwt_secret_key", (err,decoded) =>{
-            if(err) return res,json({Status: false, Eroor: "wrong Token"})
+            if(err) return res,json({Status: false, Error: "wrong Token"})
             req.id = decoded.email;
             req.role = decoded.role;
 
