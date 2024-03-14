@@ -27,17 +27,17 @@ router.post("/adminlogin", (req, res) => {
   });
 });
 
-router.get('/category', (req, res) => {
-    const sql = "SELECT * FROM category";
+router.get('/course', (req, res) => {
+    const sql = "SELECT * FROM course";
     con.query(sql, (err, result) => {
         if(err) return res.json({Status: false, Error: "Query Error"})
         return res.json({Status: true, Result: result})
     })
 })
 
-router.post('/add_category', (req, res) => {
-    const sql = "INSERT INTO category (`name`) VALUES (?)"
-    con.query(sql, [req.body.category], (err, result) => {
+router.post('/add_course', (req, res) => {
+    const sql = "INSERT INTO course (`name`) VALUES (?)"
+    con.query(sql, [req.body.course], (err, result) => {
         if(err) return res.json({Status: false, Error: "Query Error"})
         return res.json({Status: true})
     })
@@ -67,7 +67,7 @@ const upload = multer({
 
 router.post('/add_employee',upload.single('image'), (req, res) => {
     const sql = `INSERT INTO employee 
-    (name,email,password, address, salary,image, category_id) 
+    (name,email,password, address, age,image, course_id) 
     VALUES (?)`;
     bcrypt.hash(req.body.password, 10, (err, hash) => {
         if(err) return res.json({Status: false, Error: "Query Error"})
@@ -76,9 +76,9 @@ router.post('/add_employee',upload.single('image'), (req, res) => {
             req.body.email,
             hash,
             req.body.address,
-            req.body.salary, 
+            req.body.age, 
             req.file.filename,
-            req.body.category_id
+            req.body.course_id
         ]
         con.query(sql, [values], (err, result) => {
             if(err) return res.json({Status: false, Error: err})
@@ -107,14 +107,14 @@ router.get('/employee/:id', (req, res) => {
 router.put('/edit_employee/:id', (req, res) => {
     const id = req.params.id;
     const sql = `UPDATE employee 
-        set name = ?, email = ?, salary = ?, address = ?, category_id = ? 
+        set name = ?, email = ?, age = ?, address = ?, course_id = ? 
         Where id = ?`
     const values = [
         req.body.name,
         req.body.email,
-        req.body.salary,
+        req.body.age,
         req.body.address,
-        req.body.category_id
+        req.body.course_id
     ]
     con.query(sql,[...values, id], (err, result) => {
         if(err) return res.json({Status: false, Error: "Query Error"+err})
@@ -147,8 +147,8 @@ router.get('/employee_count', (req, res) => {
     })
 })
 
-router.get('/salary_count', (req, res) => {
-    const sql = "select sum(salary) as salary from employee";
+router.get('/age_count', (req, res) => {
+    const sql = "select sum(age) as age from employee";
     con.query(sql, (err, result) => {
         if(err) return res.json({Status: false, Error: "Query Error"+err})
         return res.json({Status: true, Result: result})
