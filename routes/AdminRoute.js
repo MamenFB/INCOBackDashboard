@@ -63,7 +63,7 @@ const upload = multer({
       }
     }
   });
-// end imag eupload 
+// end image upload 
 
 router.post('/add_employee',upload.single('image'), (req, res) => {
     const sql = `INSERT INTO employee 
@@ -138,6 +138,46 @@ router.get('/admin_count', (req, res) => {
         return res.json({Status: true, Result: result})
     })
 })
+
+
+//student CRUD function
+router.post('/add_student', upload.single('image'), (req, res) => {
+    const sql = `INSERT INTO student 
+    (name, email, password, address, age, image, course_id) 
+    VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    bcrypt.hash(req.body.password, 10, (err, hash) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" });
+
+        const values = [
+            req.body.name,
+            req.body.email,
+            hash, // hashed password
+            req.body.address,
+            req.body.age, 
+            req.file.filename,
+            req.body.course_id
+        ];
+
+        con.query(sql, values, (err, result) => {
+            if (err) return res.json({ Status: false, Error: err });
+            console.log(result);
+            return res.json({ Status: true });
+        });
+    });
+});
+
+
+//Teacher CRUD function
+router.get('/employee', (req, res) => {
+    const sql = "SELECT * FROM employee";
+    con.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"})
+        return res.json({Status: true, Result: result})
+    })
+})
+
+
+//employee count
 
 router.get('/employee_count', (req, res) => {
     const sql = "select count(id) as employee from employee";
