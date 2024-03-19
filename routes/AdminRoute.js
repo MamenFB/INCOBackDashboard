@@ -77,7 +77,7 @@ router.post('/add_employee',upload.single('image'), (req, res) => {
             hash,
             req.body.address,
             req.body.age, 
-            req.file.filename,
+            req.file.filename,//image
             req.body.course_id
         ]
         con.query(sql, [values], (err, result) => {
@@ -143,7 +143,7 @@ router.get('/admin_count', (req, res) => {
 //student CRUD function
 router.post('/add_student', upload.single('image'), (req, res) => {
     const sql = `INSERT INTO student 
-    (name, email, password, address, age, gender, image, nationality, course_id) 
+    (name, email, password, age, address, nationality, gender, image, course_id) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)`;
     bcrypt.hash(req.body.password, 10, (err, hash) => {
         if (err) return res.json({ Status: false, Error: "Query Error" });
@@ -152,12 +152,11 @@ router.post('/add_student', upload.single('image'), (req, res) => {
             req.body.name,
             req.body.email,
             hash, // hashed password
-            req.body.address,
             req.body.age,
-            req.body.gender,
+            req.body.address,
             req.body.nationality,
-            req.body.image, // Assuming req.body.image contains the nationality
-            req.file.filename, // Assuming req.file.filename contains the image
+            req.body.gender,
+            req.file.filename, // req.file.filename contains the image
             req.body.course_id
         ];
         
