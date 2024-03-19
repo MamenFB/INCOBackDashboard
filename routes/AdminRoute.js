@@ -143,8 +143,8 @@ router.get('/admin_count', (req, res) => {
 //student CRUD function
 router.post('/add_student', upload.single('image'), (req, res) => {
     const sql = `INSERT INTO student 
-    (name, email, password, address, age, image, course_id) 
-    VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    (name, email, password, address, age, gender, image, nationality, course_id) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)`;
     bcrypt.hash(req.body.password, 10, (err, hash) => {
         if (err) return res.json({ Status: false, Error: "Query Error" });
 
@@ -153,11 +153,14 @@ router.post('/add_student', upload.single('image'), (req, res) => {
             req.body.email,
             hash, // hashed password
             req.body.address,
-            req.body.age, 
-            req.file.filename,
+            req.body.age,
+            req.body.gender,
+            req.body.nationality,
+            req.body.image, // Assuming req.body.image contains the nationality
+            req.file.filename, // Assuming req.file.filename contains the image
             req.body.course_id
         ];
-
+        
         con.query(sql, values, (err, result) => {
             if (err) return res.json({ Status: false, Error: err });
             console.log(result);
@@ -165,6 +168,26 @@ router.post('/add_student', upload.single('image'), (req, res) => {
         });
     });
 });
+
+
+router.get('/student', (req, res) => {
+    const sql = "SELECT * FROM student";
+    con.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"})
+        return res.json({Status: true, Result: result})
+    })
+})
+
+router.delete('/delete_student/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = "delete from student where id = ?"
+    con.query(sql,[id], (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+})
+
+//student part ends here
 
 
 //Teacher CRUD function
@@ -216,5 +239,22 @@ router.get('/detail/:id', (req, res) =>{
             return res.json(result)
     })
 })
+
+// Add routes for student count and records
+router.get('/student_count', (req, res) => {
+    const sql = "select count(id) as student from student";
+    con.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+});
+
+router.get('/student_records', (req, res) => {
+    const sql = "SELECT * FROM student";
+    con.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"})
+        return res.json({Status: true, Result: result})
+    })
+});
 
 export { router as adminRouter };
