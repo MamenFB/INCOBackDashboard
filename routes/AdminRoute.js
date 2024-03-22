@@ -133,6 +133,87 @@ router.delete('/delete_employee/:id', (req, res) => {
     })
 })
 
+//Count
+
+router.get('/admin_count', (req, res) => {
+    const sql = "select count(id) as admin from admin";
+    con.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+})
+
+//course CRUD
+router.delete('/delete_course/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = "delete from course where id = ?"
+    con.query(sql,[id], (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+})
+
+//Couse CRUD ends here
+
+
+//student CRUD function
+router.post('/add_student', upload.single('image'), (req, res) => {
+    const sql = `INSERT INTO student 
+    (name, email, password, age, address, nationality, gender, image, course) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)`;
+    bcrypt.hash(req.body.password, 10, (err, hash) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" });
+
+        const values = [
+            req.body.name,
+            req.body.email,
+            hash, // hashed password
+            req.body.age,
+            req.body.address,
+            req.body.nationality,
+            req.body.gender,
+            req.file.filename, // req.file.filename contains the image
+            req.body.course_id
+        ];
+        
+        con.query(sql, values, (err, result) => {
+            if (err) return res.json({ Status: false, Error: err });
+            console.log(result);
+            return res.json({ Status: true });
+        });
+
+    })
+})
+
+router.get('/employee', (req, res) => {
+    const sql = "SELECT * FROM employee";
+    con.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"})
+        return res.json({Status: true, Result: result})
+    })
+})
+
+router.get('/employee/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = "SELECT * FROM employee WHERE id = ?";
+    con.query(sql,[id], (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"})
+        return res.json({Status: true, Result: result})
+    })
+})
+
+
+router.delete('/delete_employee/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = "delete from employee where id = ?"
+    con.query(sql,[id], (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+})
+
+//Count
+
 router.get('/admin_count', (req, res) => {
     const sql = "select count(id) as admin from admin";
     con.query(sql, (err, result) => {
@@ -238,31 +319,45 @@ router.get('/employee', (req, res) => {
 })
 
 
-//employee count
 
-router.get('/employee_count', (req, res) => {
-    const sql = "select count(id) as employee from employee";
+
+//student count
+
+router.get('/student_count', (req, res) => {
+    const sql = "SELECT COUNT(id) AS total_students FROM student";
     con.query(sql, (err, result) => {
         if(err) return res.json({Status: false, Error: "Query Error"+err})
         return res.json({Status: true, Result: result})
     })
-})
+});
 
-router.get('/age_count', (req, res) => {
-    const sql = "select sum(age) as age from employee";
+router.get('/male_count', (req, res) => {
+    const sql = "SELECT COUNT(*) AS male_count FROM student WHERE gender = 'male'";
     con.query(sql, (err, result) => {
         if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
+        const maleCount = result[0].male_count;
+        getTotalStudentCount(res, maleCount);
     })
-})
+});
 
-router.get('/admin_records', (req, res) => {
-    const sql = "select * from admin"
+router.get('/female_count', (req, res) => {
+    const sql = "SELECT COUNT(*) AS female_count FROM student WHERE gender = 'female'";
     con.query(sql, (err, result) => {
         if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
+        const femaleCount = result[0].female_count;
+        getTotalStudentCount(res, undefined, femaleCount);
     })
-})
+});
+
+function getTotalStudentCount(res, maleCount = 0, femaleCount = 0) {
+    const sql = "SELECT COUNT(id) AS total_students FROM student";
+    con.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        const totalStudents = result[0].total_students;
+        return res.json({Status: true, totalStudents, maleCount, femaleCount});
+    });
+}
+
 
 router.get('/logout', (req, res) => {
     res.clearCookie('token')
