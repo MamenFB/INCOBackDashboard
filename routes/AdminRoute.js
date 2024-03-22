@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post("/adminlogin", (req, res) => {
   const sql = "SELECT * from admin Where email = ? and password = ?";
-  con.query(sql, [req.body.email, req.body.password], (err, result) => {
+    con.query(sql, [req.body.email, req.body.password], (err, result) => {
     if (err) return res.json({ loginStatus: false, Error: "Query error" });
     if (result.length > 0) {
       const email = result[0].email;
@@ -115,7 +115,7 @@ router.post('/add_teacher',upload.single('image'), (req, res) => {
             req.body.name,
             req.body.email,
             hash,
-           
+        
             req.file.filename,
             req.body.course_id
         ]
