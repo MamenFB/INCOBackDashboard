@@ -158,42 +158,6 @@ router.get('/teacher/:id', (req, res) => {
     })
 })
 
-<<<<<<< HEAD
-router.put('/edit_employee/:id', (req, res) => {
-    const id = req.params.id;
-    const sql = `UPDATE employee 
-        set name = ?, email = ?, age = ?, address = ?, course_id = ? 
-        Where id = ?`
-    const values = [
-        req.body.name,
-        req.body.email,
-        req.body.age,
-        req.body.address,
-        req.body.course_id
-    ]
-    con.query(sql,[...values, id], (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
-    })
-})
-router.put('/edit_teacher/:id', (req, res) => {
-    const id = req.params.id;
-    const sql = `UPDATE teacher
-        set name = ?, email = ?, course_id = ? 
-        Where id = ?`
-    const values = [
-        req.body.name,
-        req.body.email,
-    
-        req.body.course_id
-    ]
-    con.query(sql,[...values, id], (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
-    })
-})
-=======
->>>>>>> 7a5839c2d852532aad8999c23d7e139be579d339
 
 router.delete('/delete_employee/:id', (req, res) => {
     const id = req.params.id;
