@@ -1,0 +1,13 @@
+version: '3.8' # Asegúrate de usar una versión compatible con tu Docker Compose
+services:
+  mysql:
+    image: mysql:latest
+    restart: always
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: inco
+      MYSQL_DATABASE: inco
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql

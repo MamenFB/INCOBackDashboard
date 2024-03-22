@@ -3,6 +3,7 @@ import express from "express";
 import cors from 'cors';
 import {adminRouter} from "./Routes/AdminRoute.js";
 import { EmployeeRouter } from "./Routes/Employee.Route.js";
+import { TeacherRouter } from "./Routes/TeacherRouter.js";
 import  Jwt  from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 
@@ -18,6 +19,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use('/auth', adminRouter)
 app.use('/employee', EmployeeRouter)
+app.use('/teacher', TeacherRouter)
 app.use(express.static('Public'))
 
 const verifyUser = (req, res, next) => {
