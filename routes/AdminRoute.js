@@ -389,23 +389,10 @@ router.get('/student_count', (req, res) => {
         if(err) return res.json({Status: false, Error: "Query Error"+err})
         return res.json({Status: true, Result: result})
     })
-<<<<<<< HEAD
-})
-router.get('/teacher_count', (req, res) => {
-    const sql = "select count(id) as teacher from teacher";
-    con.query(sql, (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
-    })
-})
-router.get('/age_count', (req, res) => {
-    const sql = "select sum(age) as age from employee";
-=======
 });
 
 router.get('/male_count', (req, res) => {
     const sql = "SELECT COUNT(*) AS male_count FROM student WHERE gender = 'male'";
->>>>>>> a62ea22e20316d5484f3b6decedc49f54d54a896
     con.query(sql, (err, result) => {
         if(err) return res.json({Status: false, Error: "Query Error"+err})
         const maleCount = result[0].male_count;
