@@ -9,24 +9,41 @@ const router = express.Router();
 
 
 router.post("/adminlogin", (req, res) => {
-  const sql = "SELECT * from admin Where email = ? and password = ?";
-  con.query(sql, [req.body.email, req.body.password], (err, result) => {
-    if (err) return res.json({ loginStatus: false, Error: "Query error" });
-    if (result.length > 0) {
-      const email = result[0].email;
-      const token = jwt.sign(
-        { role: "admin", email: email, id: result[0].id },
-        "jwt_secret_key",
-        { expiresIn: "1d" }
-      );
-      res.cookie('token', token)
-      return res.json({ loginStatus: true, id: result[0].id });
-    } else {
-        return res.json({ loginStatus: false, Error:"wrong email or password" });
-    }
+    const { email, password } = req.body;
+  
+    // Query admin table
+    const adminQuery = "SELECT * FROM admin WHERE email = ? AND password = ?";
+    con.query(adminQuery, [email, password], (adminErr, adminResult) => {
+      if (adminErr) return res.json({ loginStatus: false, Error: "Query error" });
+      if (adminResult.length > 0) {
+        const token = jwt.sign(
+          { role: "admin", email: email, id: adminResult[0].id },
+          "jwt_secret_key",
+          { expiresIn: "1d" }
+        );
+        res.cookie('token', token)
+        return res.json({ loginStatus: true, id: adminResult[0].id });
+      } else {
+        // If not found in admin table, query teacher table
+        const teacherQuery = "SELECT * FROM teacher WHERE email = ? AND password = ?";
+        con.query(teacherQuery, [email, password], (teacherErr, teacherResult) => {
+          if (teacherErr) return res.json({ loginStatus: false, Error: "Query error" });
+          if (teacherResult.length > 0) {
+            const token = jwt.sign(
+              { role: "teacher", email: email, id: teacherResult[0].id },
+              "jwt_secret_key",
+              { expiresIn: "1d" }
+            );
+            res.cookie('token', token)
+            return res.json({ loginStatus: true, id: teacherResult[0].id });
+          } else {
+            return res.json({ loginStatus: false, Error: "Wrong email or password" });
+          }
+        });
+      }
+    });
   });
-});
-
+  
 //Course CRUD function
 
 router.get('/course', (req, res) => {
