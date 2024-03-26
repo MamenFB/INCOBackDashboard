@@ -162,8 +162,35 @@ router.get('/teacher/:id', (req, res) => {
 //Delete teacher
 router.delete('/delete_employee/:id', (req, res) => {
     const id = req.params.id;
-    const sql = "delete from employee where id = ?"
-    con.query(sql,[id], (err, result) => {
+    const sql = "DELETE FROM employee WHERE id = ?";
+    con.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error("Error deleting employee:", err);
+            return res.status(500).json({ Status: false, Error: "Failed to delete employee" });
+        }
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ Status: false, Error: "Employee not found" });
+        }
+
+        return res.json({ Status: true, Message: "Employee deleted successfully" });
+    });
+});
+
+//edit teacher
+router.put('/edit_employee/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = `UPDATE employee 
+        set name = ?, email = ?, department = ?, address = ?,  course_id = ? 
+        Where id = ?`
+    const values = [
+        req.body.name,
+        req.body.email,
+        req.body.department,
+        req.body.address,
+        req.body.course_id
+    ]
+    con.query(sql,[...values, id], (err, result) => {
         if(err) return res.json({Status: false, Error: "Query Error"+err})
         return res.json({Status: true, Result: result})
     })
