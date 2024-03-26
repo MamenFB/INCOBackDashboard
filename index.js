@@ -1,7 +1,7 @@
 import express from "express";
 import cors from 'cors';
-import {adminRouter} from "./Routes/AdminRoute.js";
-import { EmployeeRouter } from "./Routes/Employee.Route.js";
+import {adminRouter} from "./routes/AdminRoute.js";
+import { EmployeeRouter } from "./routes/Employee.Route.js";
 import  Jwt  from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 
@@ -22,17 +22,17 @@ app.use(express.static('Public'))
 const verifyUser = (req, res, next) => {
     const token = req.cookies.token; 
     if(token) {
-        Jwt.verify(token, "jwt_secret_key", (err,decoded) =>{
-            if(err) return res,json({Status: false, Error: "wrong Token"})
+        Jwt.verify(token, "jwt_secret_key", (err, decoded) =>{
+            if(err) return res.json({ Status: false, Error: "wrong Token" });
             req.id = decoded.email;
             req.role = decoded.role;
-
-        })
-    }else{
-        return res.json({Status: false, error: "not authenticated"})
+            next(); // Call next() to proceed to the next middleware
+        });
+    } else {
+        return res.json({ Status: false, error: "not authenticated" });
     }
+};
 
-}
 app.get('/verify',verifyUser, (req, res)=>{
     return res.json({Status: true, role: req.role, id: req.id})
 })

@@ -11,7 +11,7 @@ con.connect(function(err){
     if(err) {
         console.log("connection error")
     }else {
-        console.log("connected")
+        console.log("connected!")
     }
 })
 export default con;
