@@ -10,7 +10,6 @@ const router = express.Router();
 
 router.post("/adminlogin", (req, res) => {
     const { email, password } = req.body;
-  
     // Query admin table
     const adminQuery = "SELECT * FROM admin WHERE email = ? AND password = ?";
     con.query(adminQuery, [email, password], (adminErr, adminResult) => {
@@ -25,12 +24,12 @@ router.post("/adminlogin", (req, res) => {
         return res.json({ loginStatus: true, id: adminResult[0].id });
       } else {
         // If not found in admin table, query teacher table
-        const teacherQuery = "SELECT * FROM teacher WHERE email = ? AND password = ?";
+        const teacherQuery = "SELECT * FROM employee WHERE email = ? AND password = ?";
         con.query(teacherQuery, [email, password], (teacherErr, teacherResult) => {
           if (teacherErr) return res.json({ loginStatus: false, Error: "Query error" });
           if (teacherResult.length > 0) {
             const token = jwt.sign(
-              { role: "teacher", email: email, id: teacherResult[0].id },
+              { role: "employee", email: email, id: teacherResult[0].id },
               "jwt_secret_key",
               { expiresIn: "1d" }
             );
@@ -43,6 +42,7 @@ router.post("/adminlogin", (req, res) => {
       }
     });
   });
+ 
   
 //Course CRUD function
 
@@ -101,9 +101,12 @@ const upload = multer({
   });
 // end image upload 
 
+//Teachers CRUD funtion
+
+//Add teacher
 router.post('/add_employee',upload.single('image'), (req, res) => {
     const sql = `INSERT INTO employee 
-    (name,email,password, address, age,image, course_id) 
+    (name,email,password, department, address, image, course_id) 
     VALUES (?)`;
     bcrypt.hash(req.body.password, 10, (err, hash) => {
         if(err) return res.json({Status: false, Error: "Query Error"})
@@ -111,8 +114,8 @@ router.post('/add_employee',upload.single('image'), (req, res) => {
             req.body.name,
             req.body.email,
             hash,
+            req.body.department, 
             req.body.address,
-            req.body.age, 
             req.file.filename,//image
             req.body.course_id
         ]
@@ -122,7 +125,7 @@ router.post('/add_employee',upload.single('image'), (req, res) => {
         })
     })
 })
-
+//Query teacher
 router.get('/employee', (req, res) => {
     const sql = "SELECT * FROM employee";
     con.query(sql, (err, result) => {
@@ -140,7 +143,7 @@ router.get('/employee/:id', (req, res) => {
     })
 })
 
-
+//Delete teacher
 router.delete('/delete_employee/:id', (req, res) => {
     const id = req.params.id;
     const sql = "delete from employee where id = ?"
@@ -150,112 +153,6 @@ router.delete('/delete_employee/:id', (req, res) => {
     })
 })
 
-//Count
-
-router.get('/admin_count', (req, res) => {
-    const sql = "select count(id) as admin from admin";
-    con.query(sql, (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
-    })
-})
-
-//course CRUD
-router.delete('/delete_course/:id', (req, res) => {
-    const id = req.params.id;
-    const sql = "delete from course where id = ?"
-    con.query(sql,[id], (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
-    })
-})
-
-//Couse CRUD ends here
-
-
-//student CRUD function
-router.post('/add_student', upload.single('image'), (req, res) => {
-    const sql = `INSERT INTO student 
-    (name, email, password, age, address, nationality, gender, image, course) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)`;
-    bcrypt.hash(req.body.password, 10, (err, hash) => {
-        if (err) return res.json({ Status: false, Error: "Query Error" });
-
-        const values = [
-            req.body.name,
-            req.body.email,
-            hash, // hashed password
-            req.body.age,
-            req.body.address,
-            req.body.nationality,
-            req.body.gender,
-            req.file.filename, // req.file.filename contains the image
-            req.body.course_id
-        ];
-        
-        con.query(sql, values, (err, result) => {
-            if (err) return res.json({ Status: false, Error: err });
-            console.log(result);
-            return res.json({ Status: true });
-        });
-
-    })
-})
-
-router.get('/employee', (req, res) => {
-    const sql = "SELECT * FROM employee";
-    con.query(sql, (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"})
-        return res.json({Status: true, Result: result})
-    })
-})
-
-router.get('/employee/:id', (req, res) => {
-    const id = req.params.id;
-    const sql = "SELECT * FROM employee WHERE id = ?";
-    con.query(sql,[id], (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"})
-        return res.json({Status: true, Result: result})
-    })
-})
-
-
-router.delete('/delete_employee/:id', (req, res) => {
-    const id = req.params.id;
-    const sql = "delete from employee where id = ?"
-    con.query(sql,[id], (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
-    })
-})
-
-//Count
-
-router.get('/admin_count', (req, res) => {
-    const sql = "select count(id) as admin from admin";
-    con.query(sql, (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
-    })
-})
-
-//course CRUD
-router.delete('/delete_course/:id', (req, res) => {
-    const id = req.params.id;
-    const sql = "delete from course where id = ?"
-    con.query(sql,[id], (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
-    })
-})
-
-
-
-
-
-
-
-//Couse CRUD ends here
 
 
 //student CRUD function
@@ -321,20 +218,7 @@ router.put('/edit_student/:id', (req, res) => {
         return res.json({Status: true, Result: result})
     })
 })
-
-
 //student part ends here
-
-
-//Teacher CRUD function
-router.get('/employee', (req, res) => {
-    const sql = "SELECT * FROM employee";
-    con.query(sql, (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"})
-        return res.json({Status: true, Result: result})
-    })
-})
-
 
 
 
@@ -375,6 +259,16 @@ function getTotalStudentCount(res, maleCount = 0, femaleCount = 0) {
     });
 }
 
+//Count count admin
+
+router.get('/admin_count', (req, res) => {
+    const sql = "select count(id) as admin from admin";
+    con.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    })
+})
+
 
 router.get('/logout', (req, res) => {
     res.clearCookie('token')
@@ -405,6 +299,47 @@ router.get('/student_records', (req, res) => {
         if(err) return res.json({Status: false, Error: "Query Error"})
         return res.json({Status: true, Result: result})
     })
+});
+
+// Get all events from calendar
+router.get('/events', (req, res) => {
+    const sql = "SELECT * FROM calendar";
+    con.query(sql, (err, result) => {
+        if (err) {
+            console.error("Error fetching events:", err);
+            return res.status(500).json({ status: false, error: "Failed to fetch events" });
+        }
+        return res.status(200).json({ status: true, events: result });
+    });
+});
+
+// Add a new event to calendar
+router.post('/events', (req, res) => {
+    const { title, description, start_time, end_time } = req.body;
+    const sql = "INSERT INTO calendar (title, description, start_time, end_time) VALUES (?, ?, ?, ?)";
+    con.query(sql, [title, description, start_time, end_time], (err, result) => {
+        if (err) {
+            console.error("Error adding event:", err);
+            return res.status(500).json({ status: false, error: "Failed to add event" });
+        }
+        return res.status(201).json({ status: true, message: "Event added successfully" });
+    });
+});
+
+// Delete an event from calendar by ID
+router.delete('/events/:id', (req, res) => {
+    const eventId = req.params.id;
+    const sql = "DELETE FROM calendar WHERE id = ?";
+    con.query(sql, [eventId], (err, result) => {
+        if (err) {
+            console.error("Error deleting event:", err);
+            return res.status(500).json({ status: false, error: "Failed to delete event" });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ status: false, error: "Event not found" });
+        }
+        return res.status(200).json({ status: true, message: "Event deleted successfully" });
+    });
 });
 
 export { router as adminRouter };
