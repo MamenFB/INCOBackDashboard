@@ -9,23 +9,6 @@ const router = express.Router();
 
 
 router.post("/adminlogin", (req, res) => {
-<<<<<<< HEAD
-  const sql = "SELECT * from admin Where email = ? and password = ?";
-    con.query(sql, [req.body.email, req.body.password], (err, result) => {
-    if (err) return res.json({ loginStatus: false, Error: "Query error" });
-    if (result.length > 0) {
-      const email = result[0].email;
-      const token = jwt.sign(
-        { role: "admin", email: email, id: result[0].id },
-        "jwt_secret_key",
-        { expiresIn: "1d" }
-      );
-      res.cookie('token', token)
-      return res.json({ loginStatus: true, id: result[0].id });
-    } else {
-        return res.json({ loginStatus: false, Error:"wrong email or password" });
-    }
-=======
     const { email, password } = req.body;
     // Query admin table
     const adminQuery = "SELECT * FROM admin WHERE email = ? AND password = ?";
@@ -143,31 +126,7 @@ router.post('/add_employee',upload.single('image'), (req, res) => {
         })
     })
 })
-<<<<<<< HEAD
-router.post('/add_teacher',upload.single('image'), (req, res) => {
-    const sql = `INSERT INTO teacher
-    (name,email,password, image, course_id) 
-    VALUES (?)`;
-    bcrypt.hash(req.body.password, 10, (err, hash) => {
-        if(err) return res.json({Status: false, Error: "Query Error"})
-        const values = [
-            req.body.name,
-            req.body.email,
-            hash,
-        
-            req.file.filename,
-            req.body.course_id
-        ]
-        con.query(sql, [values], (err, result) => {
-            if(err) return res.json({Status: false, Error: err})
-            return res.json({Status: true})
-        })
-    })
-})
-
-=======
 //Query teacher
->>>>>>> origin/Ramesh
 router.get('/employee', (req, res) => {
     const sql = "SELECT * FROM employee";
     con.query(sql, (err, result) => {
@@ -295,23 +254,10 @@ router.get('/student_count', (req, res) => {
         if(err) return res.json({Status: false, Error: "Query Error"+err})
         return res.json({Status: true, Result: result})
     })
-<<<<<<< HEAD
-})
-router.get('/teacher_count', (req, res) => {
-    const sql = "select count(id) as teacher from teacher";
-    con.query(sql, (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
-    })
-})
-router.get('/age_count', (req, res) => {
-    const sql = "select sum(age) as age from employee";
-=======
 });
 
 router.get('/male_count', (req, res) => {
     const sql = "SELECT COUNT(*) AS male_count FROM student WHERE gender = 'male'";
->>>>>>> origin/Ramesh
     con.query(sql, (err, result) => {
         if(err) return res.json({Status: false, Error: "Query Error"+err})
         const maleCount = result[0].male_count;
