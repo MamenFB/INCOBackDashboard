@@ -22,9 +22,10 @@ Corporate Identity: Custom design according to INCO's corporate identity, provid
 ![Static Badge](https://img.shields.io/badge/MySQL-3.9.1-blue?logo=MySQL) <br>
 -📍 Frontend: <br>
 ![Static Badge](https://img.shields.io/badge/Boostrasp-5.3.2-violet?logo=bootstrap)
-![Static Badge](https://img.shields.io/badge/vite-5.0.8-yellow?logo=vite) <br>
+![Static Badge](https://img.shields.io/badge/vite-5.0.8-yellow?logo=vite) ![Static Badge](https://img.shields.io/badge/React-18.2.0-green?logo=react) <br>
 -📍 Base de Datos:<br>
-![Static Badge](https://img.shields.io/badge/React-18.2.0-green?logo=react)
+![Static Badge](https://img.shields.io/badge/MySQL-8.0-blue?logo=MySQL)
+
 
 
 
@@ -36,10 +37,8 @@ Corporate Identity: Custom design according to INCO's corporate identity, provid
 To run Pure Treats locally:
 
 1. Clone the repository.
-2. Install dependencies using npm install for the frontend and for the backend.
-3. Configure the database settings in the application.properties file.
-4. Run the application using npm start for the frontend and  for the backend.
-   
+2. Install dependencies using npm install for the frontend and for the backend..
+3. Run the application using npm run dev for the frontend and  npm start for the backend.
 
 <br><br>
 
@@ -51,7 +50,7 @@ To run Pure Treats locally:
 | dev      | Development branch. Here we merge frontend and backend branches and check stability |
 | backend  | Backend development branch 
 | frontend | Frontend development branch                                             |
-                           |
+
 <br><br>
 
 
@@ -62,7 +61,6 @@ To run Pure Treats locally:
 
 Contributions are welcome. If you have any suggestions for improvement, please open an issue or pull request
 <br>
-
 
 
 
