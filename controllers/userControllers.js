@@ -1,45 +1,29 @@
+// userscontrollers.js
 
 import express from "express";
-import cors from 'cors';
-import {adminRouter} from "./Routes/AdminRoute.js";
-import { EmployeeRouter } from "./Routes/Employee.Route.js";
-import { TeacherRouter } from "./Routes/TeacherRouter.js";
-import  Jwt  from "jsonwebtoken";
+import Jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 
-const app = express();
-app.use(cors({
-    origin: ["http://localhost:5173"],
-    methods: ['GET', 'POST', 'PUT','DELETE' ],
-    credentials: true
-}
+const router = express.Router();
 
-))
-app.use(express.json())
-app.use(cookieParser())
-app.use('/auth', adminRouter)
-app.use('/employee', EmployeeRouter)
-app.use('/teacher', TeacherRouter)
-app.use(express.static('Public'))
-
+// Middleware para verificar el token
 const verifyUser = (req, res, next) => {
     const token = req.cookies.token; 
-    if(token) {
-        Jwt.verify(token, "jwt_secret_key", (err,decoded) =>{
-            if(err) return res,json({Status: false, Eroor: "wrong Token"})
+    if (token) {
+        Jwt.verify(token, "jwt_secret_key", (err, decoded) => {
+            if (err) return res.json({ Status: false, Error: "Token incorrecto" });
             req.id = decoded.email;
             req.role = decoded.role;
-
-        })
-    }else{
-        return res.json({Status: false, error: "not authenticated"})
+            next();
+        });
+    } else {
+        return res.json({ Status: false, error: "No autenticado" });
     }
+};
 
-}
-app.get('/verify',verifyUser, (req, res)=>{
-    return res.json({Status: true, role: req.role, id: req.id})
-})
-
-app.listen(3000, () => {
-    console.log("server is running")
+// Ruta para verificar el estado de autenticación
+router.get('/verify', verifyUser, (req, res) => {
+    return res.json({ Status: true, role: req.role, id: req.id });
 });
+
+export default router;

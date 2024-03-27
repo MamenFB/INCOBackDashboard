@@ -125,31 +125,7 @@ router.post('/add_employee',upload.single('image'), (req, res) => {
         })
     })
 })
-<<<<<<< HEAD
-router.post('/add_teacher',upload.single('image'), (req, res) => {
-    const sql = `INSERT INTO teacher
-    (name,email,password, image, course_id) 
-    VALUES (?)`;
-    bcrypt.hash(req.body.password, 10, (err, hash) => {
-        if(err) return res.json({Status: false, Error: "Query Error"})
-        const values = [
-            req.body.name,
-            req.body.email,
-            hash,
-           
-            req.file.filename,
-            req.body.course_id
-        ]
-        con.query(sql, [values], (err, result) => {
-            if(err) return res.json({Status: false, Error: err})
-            return res.json({Status: true})
-        })
-    })
-})
-
-=======
 //Query teacher
->>>>>>> 8f7caeb56998b768e1d0983b1420c7c0bb40cf8b
 router.get('/employee', (req, res) => {
     const sql = "SELECT * FROM employee";
     con.query(sql, (err, result) => {
@@ -185,22 +161,6 @@ router.get('/teacher/:id', (req, res) => {
 //Delete teacher
 router.delete('/delete_employee/:id', (req, res) => {
     const id = req.params.id;
-<<<<<<< HEAD
-    const sql = "delete from employee where id = ?"
-    con.query(sql,[id], (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
-    })
-})
-router.delete('/delete_teacher/:id', (req, res) => {
-    const id = req.params.id;
-    const sql = "delete from teacher where id = ?"
-    con.query(sql,[id], (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
-    })
-})
-=======
     const sql = "DELETE FROM employee WHERE id = ?";
     con.query(sql, [id], (err, result) => {
         if (err) {
@@ -211,7 +171,6 @@ router.delete('/delete_teacher/:id', (req, res) => {
         if (result.affectedRows === 0) {
             return res.status(404).json({ Status: false, Error: "Employee not found" });
         }
->>>>>>> 8f7caeb56998b768e1d0983b1420c7c0bb40cf8b
 
         return res.json({ Status: true, Message: "Employee deleted successfully" });
     });
@@ -351,32 +310,6 @@ router.get('/admin_count', (req, res) => {
         return res.json({Status: true, Result: result})
     })
 })
-<<<<<<< HEAD
-router.get('/teacher_count', (req, res) => {
-    const sql = "select count(id) as teacher from teacher";
-    con.query(sql, (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
-    })
-})
-router.get('/age_count', (req, res) => {
-    const sql = "select sum(age) as age from employee";
-    con.query(sql, (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
-    })
-})
-
-router.get('/admin_records', (req, res) => {
-    const sql = "select * from admin"
-    con.query(sql, (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
-    })
-})
-=======
-
->>>>>>> 8f7caeb56998b768e1d0983b1420c7c0bb40cf8b
 
 router.get('/logout', (req, res) => {
     res.clearCookie('token')
